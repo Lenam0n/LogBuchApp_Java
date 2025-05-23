@@ -52,7 +52,7 @@ public class StyleUtil {
             return this;
         }
 
-        /** Optional: liefert die Komponente zurück, falls Du sie direkt weiterverwenden willst */
+        /** Liefert die Komponente zurück, falls Du sie direkt weiterverwenden willst */
         public <T extends JComponent> T get() {
             @SuppressWarnings("unchecked")
             T t = (T) comp;

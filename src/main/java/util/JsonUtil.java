@@ -4,6 +4,7 @@ package util;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import exeption.DuplicateEntryException;
 import interfaces.Model;
 
 import java.io.File;
@@ -30,15 +31,22 @@ public class JsonUtil {
      * @throws IOException      Bei IO-Fehlern
      * @throws IllegalArgumentException Wenn bereits ein Objekt mit derselben ID existiert.
      */
-    public static <T extends Model> void add(T model, Class<T> type, File jsonFile) throws IOException {
-        List<T> list = readList(type, jsonFile);
-        boolean exists = list.stream().anyMatch(m -> m.getId().equals(model.getId()));
-        if (exists) {
-            throw new IllegalArgumentException("Ein Objekt mit ID '" + model.getId() + "' existiert bereits.");
+    public static <T extends Model> void add(
+            T model,
+            Class<T> type,
+            File jsonFile
+        ) throws IOException, DuplicateEntryException {
+            List<T> list = readAll(type, jsonFile);
+            boolean exists = list.stream()
+                .anyMatch(m -> m.getId().equals(model.getId()));
+            if (exists) {
+                throw new DuplicateEntryException(
+                    "Eintrag mit ID '" + model.getId() + "' existiert bereits."
+                );
+            }
+            list.add(model);
+            writeList(list, jsonFile);
         }
-        list.add(model);
-        writeList(list, jsonFile);
-    }
 
     /**
      * Entfernt ein Model-Objekt anhand seiner ID aus der JSON-Liste.
